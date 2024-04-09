@@ -12,7 +12,7 @@ public class ResultFileWriter {
         this.fileName = fileName;
     }
 
-    public void writeToResultFile(double[] result, String rowName) {
+    public synchronized void writeToResultFile(double[] result, String rowName) {
         try (FileWriter writer = new FileWriter(fileName, true)) {
             writer.write(rowName + ": ");
             for (double element : result) {
@@ -24,7 +24,7 @@ public class ResultFileWriter {
         }
     }
 
-    public void writeToResultFile(double[][] result) {
+    public synchronized void writeToResultFile(double[][] result) {
         try (FileWriter writer = new FileWriter(fileName, true)) {
             for (double[] row : result) {
                 for (double element : row) {
