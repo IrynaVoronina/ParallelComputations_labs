@@ -2,7 +2,6 @@ package org.example.utilities;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.concurrent.Semaphore;
 
 public class ResultFileWriter {
 

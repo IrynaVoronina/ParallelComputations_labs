@@ -19,3 +19,5 @@ public class ResultConsolePrinter {
         System.out.println();
     }
 }
+
+
