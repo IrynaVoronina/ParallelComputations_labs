@@ -6,6 +6,8 @@ import java.util.concurrent.Semaphore;
 
 public class ResultFileWriter {
 
+    private final Semaphore fileSemaphore = new Semaphore(1);
+
     private final String fileName;
 
     public ResultFileWriter(String fileName) {
@@ -13,27 +15,39 @@ public class ResultFileWriter {
     }
 
     public void writeToResultFile(double[] result, String rowName) {
-        try (FileWriter writer = new FileWriter(fileName, true)) {
-            writer.write(rowName + ": ");
-            for (double element : result) {
-                writer.write(element + "\t");
-            }
-            writer.write("\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void writeToResultFile(double[][] result) {
-        try (FileWriter writer = new FileWriter(fileName, true)) {
-            for (double[] row : result) {
-                for (double element : row) {
+        try {
+            fileSemaphore.acquire();
+            try (FileWriter writer = new FileWriter(fileName, true)) {
+                writer.write(rowName + ": ");
+                for (double element : result) {
                     writer.write(element + "\t");
                 }
                 writer.write("\n");
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            fileSemaphore.release();
+        }
+    }
+
+    public void writeToResultFile(double[][] result) {
+        try {
+            fileSemaphore.acquire();
+            try (FileWriter writer = new FileWriter(fileName, true)) {
+
+                for (double[] row : result) {
+                    for (double element : row) {
+                        writer.write(element + "\t");
+                    }
+                    writer.write("\n");
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            fileSemaphore.release();
         }
     }
 }
